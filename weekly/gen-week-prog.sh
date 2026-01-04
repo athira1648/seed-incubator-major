@@ -107,9 +107,9 @@ fill_week_data() {
         # Should've been "29-12-25"
         # date_string="@$(date -d "$((-24 * $i + $Hour_Offset)) hours" "+%d-%m-%g")"
         date_string_day="$(date -d "$((-24 * $i + $Hour_Offset)) hours" "+%d")"
-        date_strong_month="$(date -d "$((-24 * $i + $Hour_Offset)) hours" "+%m")"
+        date_string_month="$(date -d "$((-24 * $i + $Hour_Offset)) hours" "+%m")"
         date_string_year="$(date -d "$((-24 * $i + $Hour_Offset)) hours" | awk '{print $7}' | sed "s/^20//")"
-        date_string="@${date_string_day}-${date_strong_month}-${date_string_year}"
+        date_string="@${date_string_day}-${date_string_month}-${date_string_year}"
 
         Week_Dates+=("$(date -d "$((-24 * $i + $Hour_Offset)) hours" "+%d")")
         Week_Months+=("$(date -d "$((-24 * $i + $Hour_Offset)) hours" "+%m")")
@@ -130,8 +130,8 @@ fill_week_data() {
 
         date_string_day="$(date -d "$((24 * (7 - $i) + $Hour_Offset)) hours" "+%d")"
         date_string_month="$(date -d "$((24 * (7 - $i) + $Hour_Offset)) hours" "+%m")"
-        date_string_year="$(date -d "$((24 * (7 - $i) + $Hour_Offset)) hours" | '{print $7}' | sed "s/^20//")"
-        date_string="@${date_string_day}-${date_strong_month}-${date_string_year}"
+        date_string_year="$(date -d "$((24 * (7 - $i) + $Hour_Offset)) hours" | awk '{print $7}' | sed "s/^20//")"
+        date_string="@${date_string_day}-${date_string_month}-${date_string_year}"
 
         Week_Dates+=("$(date -d "$((24 * (7 - $i) + $Hour_Offset)) hours" "+%d")")
         Week_Months+=("$(date -d "$((24 * (7 - $i) + $Hour_Offset)) hours" "+%m")")
