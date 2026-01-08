@@ -1,0 +1,232 @@
+\documentclass[conference]{IEEEtran}
+
+\input{preamble.tex}
+
+\begin{document}
+
+\title{Seed Incubation Plant}
+
+\author{
+    \IEEEauthorblockN{Anjana Roy}
+    \IEEEauthorblockA{\emph{Dept. of Electronics \& Communication}\\ \emph{Rajiv Gandhi Institute of Technology}\\ Kerala, India\\ 22bl14920@rit.ac.in}
+    \and
+    \IEEEauthorblockN{Aswatheertha T T}
+    \IEEEauthorblockA{\emph{Dept. of Electronics \& Communication}\\ \emph{Rajiv Gandhi Institute of Technology}\\ Kerala, India\\ 22bl14661@rit.ac.in}
+    \linebreakand
+    % \and
+    \IEEEauthorblockN{Athira Madhusoodanan}
+    \IEEEauthorblockA{\emph{Dept. of Electronics \& Communication}\\ \emph{Rajiv Gandhi Institute of Technology}\\ Kerala, India\\ 22bl14998@rit.ac.in}
+    \and
+    \IEEEauthorblockN{Daniel V Mathew}
+    \IEEEauthorblockA{\emph{Dept. of Electronics \& Communication}\\ \emph{Rajiv Gandhi Institute of Technology}\\ Kerala, India\\ 22bl14682@rit.ac.in}
+}
+
+\maketitle
+
+\begin{abstract}
+    \noindent The \textbf{Seed Incubation Plant} with \textbf{EMCU} and \textbf{GMU}
+    aims to optimize the \emph{germination} and \emph{growth
+    process} of \emph{seeds} by providing a \emph{controlled} and
+    \emph{monitored environment}.
+    %%
+    Manual methods are prone to \emph{human error}, requiring constant
+    attention to environmental factors which can \emph{fluctuate} and
+    \emph{adversely affect seed growth} and may lead to \emph{suboptimal
+    results}.
+    %%
+    In most cases \emph{migrating} to an automated system is not
+    \emph{economically feasible}, as it may require importing various
+    equipments.Thus, an \emph{indigenous} implementation using a widely
+    available \emph{controller} is an alternative solution.
+    %%
+    This system aims to realize the \emph{environment monitoring and control
+    system} which will \emph{monitor} and \emph{control} various aspects that
+    influence the optimal growth of the seedling, including \textbf{humidity},
+    \textbf{temperature}, \textbf{lighting} and \textbf{soil moisture} by using ESP32
+    \emph{microcontroller}. Wifi capabilities of ESP32 ensures
+    the accumulation of collected data and presenting it to the user, visually.
+    %%
+    Along with this, we aims to develop a \emph{growth monitoring unit} powered by a
+    fully functional \textbf{TinyML} model that can utilize the limited resources of
+    the ESP32 CAM module, enabling close monitoring of different stages of
+    seed's germination. In addition, we aim to develop SINC - a fully functional
+    companion app to the Seed Incubator.
+    %%
+    This solution not only tries to improve the \emph{efficiency} and the
+    \emph{success rate of seed germination} but also tries to reduce the
+    \emph{labour costs} and \emph{energy consumption}, hoping to offer a
+    sustainable and reliable alternative to traditional incubation methods.
+\end{abstract}
+
+\section{Introduction}
+Seed Incubation Plant aims to automate the incubation process of a seed in hope of minimizing
+the labour cost and improving the yield. Seed Incubation Plant that integrates real‑time environment monitoring, growth analysis, and user‑controlled management. The system comprises three major subsystems: the Environment Monitoring and Control Unit (EMCU), the Growth Monitoring Unit (GMU), and the SINC mobile application. The proposed solution provides a controlled micro‑environment supporting optimal germination and early plant development by regulating temperature, humidity, lighting, and air quality, while also enabling visual growth tracking through TinyML‑assisted image analysis. This paper outlines the system architecture, workflow, implementation methodologies, and potential future improvements.
+Seed germination and early-stage plant growth require precise environmental conditions, often challenging to maintain manually. Traditional methods rely heavily on continuous monitoring and labor, which can lead to inconsistencies and poor yield. The Seed Incubation Plant aims to replace this dependency with an automated, sensor‑driven, intelligent system capable of sustaining ideal conditions while reducing user involvement. The project uses ESP32‑based modules, integrated sensing, machine‑learning‑assisted monitoring, and a dedicated Android interface.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{endEMCUOverview.pdf}
+    \caption{Overall architecture of the proposed seed incubation system}
+    \label{fig:system_overview}
+\end{figure}
+
+\section{Environment and Control Unit (EMCU)}
+As the name suggests, the Environment Monitoring and Control Unit is responsible for
+taking care of the environmental aspects of the incubator. EMCU aims to monitor and control
+aspects like the temperature, humidity, lighting, air quality, etc.  Emcu needs to interface with various systems that have
+various actuators and sensors. As a matter of fact, the sheer amount of actuators and sensors
+required to achieve this exceeds the total number of GPIOs ESP32 has. In order to synchronize
+all of the subsystems, ESP32 needs an external subsystem to control all the other subsystems,
+an Auxiliary System as we will be calling this external system, in this entire document. To
+know more about auxiliary system, jump right to chapter. Along with this, EMCU interfaces with GMU for accomplishing various tasks. And SINC
+app helps the user to control and monitor most of the aspects of EMCU.
+
+At the heart of EMCU, we need some controller to orchestrate the entire working of the incu
+bator. An ideal candidate would be readily available ESP32. As it is more powerful than other
+competing controllers available in the market. And has wireless capabilities, such as WiFi and Bluetooth, as it would ensure wireless connectivity to the incubator.
+
+\subsection{Enclosure of the Incubator}
+The enclosure of the frame houses the seedling and all the other components. So it is important
+for it to be well build. The structural frame of the incubator carries all the weight of the rest of the systems. And
+provides mounting points for the different parts of the other systems. So it is important
+for it to be strong and lasting. Although it was preferable to use aluminum, because of the
+manufacturing difficulties, we have resorted to plywood. Figure 3 shows the CAD rendering
+of the frame. Here we have used 1.8cm and 2cm plywood strips to build the frame. 
+nuts and bolts.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{frame_cad.png}
+    \caption{Assembled CAD rendering of the structural frame}
+    \label{fig:system_overview}
+\end{figure}
+
+
+The insides of the incubator needs to be isolated from the surroundings. Otherwise thermal
+energy could leak in or leak out of the incubator and ruin the cooling / heating capabilities of
+the incubator. So it is important to thermally isolate the insides of the incubator where the
+seeds are sown. 
+
+\subsection{Thermal (Exhaust) System}
+The thermal system of the incubator consists of two subsystems: temperature monitoring and temperature control. Temperature monitoring is implemented using a pair of temperature sensors, where one sensor measures the ambient temperature and the other monitors the internal incubator temperature. The relative temperature difference obtained from these sensors is used to regulate the heating and cooling operation.\par
+The thermal control subsystem comprises a core block, cooling units, intake panels, and exhaust ducts. A Peltier module is employed as the primary thermal control element due to its compact size and ease of integration. Although the coefficient of performance (COP) of the Peltier module is lower and dependent on the operating current compared to conventional compressor-based heat pumps, it is suitable for compact incubator designs. Since the Peltier module transfers heat from the cold side to the hot side, an efficient exhaust mechanism is required to dissipate heat and maintain stable internal temperature conditions.
+
+
+\subsection{Lights and Hatches}
+Proper lighting is essential for healthy seedling growth inside the incubator. Due to the enclosed structure, artificial illumination is required to support plant growth and enable visual monitoring.\par
+Full-spectrum LED strip lights are used to approximate the broad spectral characteristics of natural sunlight, while their low-profile design and low operating voltage simplify system integration.\par
+For growth monitoring, the GMU employs an ESP32-CAM module to capture plant images for analysis. Since grow lights introduce spectral distortion, additional white light sources are incorporated to ensure clear and accurate image acquisition.
+
+
+\subsection{Air Moisture System}
+Air moisture plays a crucial role in strengthening seedlings after germination. Hence, regulating the relative humidity inside the incubator is essential. The air moisture monitoring system employs paired DHT22 sensors to measure humidity levels. Although the temperature and humidity monitoring systems share the same hardware, they are treated as conceptually independent subsystems.\par
+The humidity sensing unit supports a measurement range of 0--100\%RH with a tolerance of $\pm$2\% and a resolution of 0.1\%RH. Humidity control is achieved using piezoelectric humidifiers, which operate in the ultrasonic range to atomize water into fine particles and disperse moisture into the air.\par
+Since the incubator is an enclosed environment, air stagnation may occur if not periodically refreshed. To address this, the ventilation system monitors the internal \(\mathrm{CO_2}\) concentration and replenishes the air when it falls below a predefined threshold, thereby maintaining favorable growth conditions.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{endMiniProjectEMCU.pdf}}
+    \caption{EMCU’s electronics enclosure developed as part of Mini Project}
+    \label{fig:system_overview}
+\end{figure}
+
+\subsection{Auxiliary System}
+ 
+ Due to the sheer amount of pins required to sense
+and actuate different parts of the incubator, we need a system that intermediates this task.
+Thus the birth of Auxiliary system.
+The sensory systems is mediated by two set of Analog multiplexers which are serially addressable. And the actuator systems are mediated by shift register boards. Following sections
+will take a deep dive into the design of each of these systems.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{endIncOverviewUpdated.pdf}
+    \caption{Overview EMCU's auxilary system}
+    \label{fig:system_overview}
+\end{figure}
+
+\section{Growth Monitoring System (GMU)}
+
+
+
+The Growth Monitoring Unit (GMU) is an intelligent subsystem designed to automate the observation of seed germination and early growth stages. It integrates mechanical automation, image acquisition, and TinyML-based classification to enable continuous monitoring with minimal human intervention.\par
+The core mechanical structure of the GMU is a linear rail mechanism that provides precise and repeatable motion for the ESP32-CAM module. The system employs an orthogonal X--Y stage, where the X-axis enables horizontal traversal across seed trays and the Y-axis provides perpendicular positioning control. Motion is driven by NEMA 17 stepper motors using GT2 belt-and-pulley mechanisms, ensuring accurate linear displacement with minimal backlash. The ESP32-CAM is mounted on a lightweight adjustable carriage to reduce vibration and optimize image capture.
+
+\par
+TinyML is employed to perform on-device classification of plant growth stages. Images captured by the ESP32-CAM are preprocessed and classified using a quantized convolutional neural network deployed via TensorFlow Lite for Microcontrollers. The model identifies growth stages such as germination, sprouting, and early growth without reliance on cloud computation. Classification results are synchronized with the mechanical scan positions and transmitted along with environmental data, demonstrating seamless integration of mechatronics, embedded systems, and TinyML for real-time plant growth monitoring.
+
+
+\section{SINC APP}
+
+Successful seed germination requires precise environmental conditions including temperature,
+humidity, light, and air quality. Variations in these parameters can result in delayed germination, uneven growth, or even total failure. Traditional manual monitoring is not only
+labour-intensive but also prone to human error, leading to inconsistent results. To address this
+challenge, the Seed Incubation Environmental Control App has been developed, providing a
+digital platform for real-time monitoring and control of incubation environments. The project’s objective is to integrate hardware and software into a seamless system that allows
+both visualization and control of incubation parameters. The ESP32 microcontroller, paired
+with multiple sensors, measures environmental data and transmits it wirelessly to the Flutter
+based mobile application. Users can then monitor the current conditions and modify thresholds
+that automatically trigger actuators such as heaters, fans, and humidifiers. The goal is to reduce
+human intervention, improve accuracy, and ensure optimal seed growth through automation. Temperature regulates metabolic rates in seeds, humidity ensures adequate moisture absorption, light drives photosynthesis, and air quality affects overall growth. Small deviations in
+these parameters can significantly impact germination success. Manual supervision is often
+inconsistent and cannot guarantee continuous control. Automating the monitoring and control
+process ensures that optimal conditions are maintained at all times, reducing risk and improving
+reliability for both research and commercial applications. 
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.24\columnwidth}
+        \centering
+        \includegraphics[width=\linewidth]{sinc_wifi.jpeg}
+        \caption{Wi-Fi}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.24\columnwidth}
+        \centering
+        \includegraphics[width=\linewidth]{sinc_temp.jpeg}
+        \caption{Status}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.24\columnwidth}
+        \centering
+        \includegraphics[width=\linewidth]{sinc_settings.jpeg}
+        \caption{Settings}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.24\columnwidth}
+        \centering
+        \includegraphics[width=\linewidth]{sinc.jpeg}
+        \caption{Alerts}
+    \end{subfigure}
+
+    \caption{Four application interface }
+    \label{fig:four_horizontal}
+\end{figure}
+
+
+\paragraph{SYSTEM DESIGN AND IMPLEMENTATION}
+The system architecture is structured into three layers: hardware, communication, and software.
+The hardware layer comprises the ESP32 microcontroller and sensors. Data from sensors is
+transmitted via the MQTT protocol to the Flutter application, forming the software layer.
+Users can view live data, adjust
+
+
+thresholds, and receive alerts when conditions deviate. This
+layered approach ensures modularity, scalability, and reliable operation. 
+
+Sensors continuously measure environmental parameters. The ESP32 microcontroller processes
+these readings and publishes them to MQTT topics hosted on a broker. The Flutter application
+subscribes to these topics, updating the interface in real-time. When a parameter exceeds its
+threshold, the ESP32 actuates devices to restore conditions, achieving a fully automated closed
+loop system.The MQTT protocol provides lightweight, efficient communication between the ESP32 and the
+mobile app. Following a publish-subscribe model, the ESP32 publishes sensor readings to topics,
+while the app subscribes to receive these updates. This approach ensures minimal latency,
+reduces bandwidth requirements, and allows multiple devices to communicate simultaneously
+through the broker. Persistent connections ensure that no data is lost, even in fluctuating.
+\section{Conclusion}
+The Seed Incubation Plant presented in this project demonstrates a comprehensive and systematic approach to automating the seed germination and early growth process through precise environmental monitoring and control. By integrating the Environment Monitoring and Control Unit (EMCU), Growth Monitoring Unit (GMU), and the SINC companion application, the proposed system addresses the limitations of traditional manual incubation methods, such as inconsistency, high labor dependency, and susceptibility to environmental fluctuations.
+
+This phase of the project successfully establishes the conceptual design, hardware architecture, and subsystem integration strategy required for a fully automated seed incubation system. The proposed solution emphasizes cost-effectiveness, energy efficiency, and indigenous implementation, making it suitable for small-scale agricultural applications, research environments, and controlled nursery setups. Overall, the system lays a strong foundation for further development, validation, and enhancement in subsequent phases, with the potential to significantly improve germination success rates and promote sustainable agricultural practices.
+\renewcommand{\bibname}{Bibliography}
+\bibliographystyle{ieeetr}
+\nocite{*}
+\bibliography{ref.bib}
+\end{document}
