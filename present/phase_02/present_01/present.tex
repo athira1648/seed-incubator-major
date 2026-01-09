@@ -6,339 +6,370 @@
 
 \maketitle
 
-\begin{frame} {Introduction}
+% \begin{frame} {Introduction}
+%
+%     {
+%         \begin{minipage} {0.415\textwidth}
+%             \begin{center}
+%                 \includeObjImage{ext_right.png}{5}{4.5cm}{0.5cm}
+%             \end{center}
+%         \end{minipage}
+%         \begin{minipage} {0.55\textwidth}
+%
+%             \begin{itemize}
+%                 \item \textbf{Seed Incubation Plant} aims to optimize the germination and
+%                     growth process of seeds by providing a controlled and
+%                     monitored environment.
+%
+%                 \item \textbf{Environment Monitoring and Control Unit} (EMCU) part of the
+%                     incubator takes care of environmental factors such as temperature,
+%                     humidity, lighting, $\mbox{O}_2$, etc.
+%
+%                 \item \textbf{Growth Monitoring Unit} (GMU) closely monitors and collects growth related
+%                     information from each of the germinating saplings.
+%
+%                 \item With the help of \textbf{SINC}, a companion app, the status of the incubator
+%                     can be closely watched.
+%             \end{itemize}
+%
+%         \end{minipage}
+%     }
+%
+% \end{frame}
+%
+% \begin{frame} {Objectives}
+%
+%     \begin{center}
+%         \begin{tabularx} {\textwidth} {
+%                 *{3}{>{\centering \arraybackslash}X}
+%             }
+%
+%             \includeObjImage{enclosure.png}{4}{2.825cm}{0.5cm}
+%             &
+%             \includeObjImage{growth.png}{4}{2.625cm}{0.5cm}
+%             &
+%             \includeObjImage{sinc.png}{4}{3.025cm}{0.5cm}
+%             \\
+%
+%             \begin{itemize}
+%                 \item Implement the sensor and actuator sides of the EMCU, thus
+%                     driving it into a cohesive system.
+%             \end{itemize}
+%             &
+%             \begin{itemize}
+%                 \item Implement an ESP32 CAM based Growth Monitoring Unit (GMU) powered by
+%                     a TinyML model.
+%             \end{itemize}
+%             &
+%             \begin{itemize}
+%                 \item Take the development of SINC, a companion app, to the alpha
+%                     stage.
+%             \end{itemize}
+%             \\
+%
+%         \end{tabularx}
+%     \end{center}
+%
+% \end{frame}
+%
+% \begin{frame} {Block Diagram: Overall}
+%
+%     \begin{minipage} {0.29\textwidth}
+%         \textbf{Major Components}
+%         \vspace{0.25cm}
+%         \renewcommand\arraystretch{1.5}
+%         \begin{itemize}
+%             \item EMCU
+%             \item SINC
+%             \item GMU
+%         \end{itemize}
+%     \end{minipage}
+%     \begin{minipage} {0.7\textwidth}
+%         \begin{center}
+%             \includegraphics[width = \textwidth]{overall_block_diagram.pdf}
+%         \end{center}
+%     \end{minipage}
+%
+%
+% \end{frame}
+%
+% \begin{frame}{Block Diagram: Sinc App}
+%     \centering
+%     \vspace{0.75cm}
+%
+%     \begin{tikzpicture}[
+%             scale = 0.6,
+%             transform shape,
+%             node distance=1.4cm and 2cm
+%         ]
+%
+%         % Top Layer
+%         \node[block] (app) {SINC App};
+%         \node[block, below=1.0cm of app] (ui) {User Interface};
+%
+%         % Second Layer
+%         \node[block, below left=1.5cm and 2.0cm of ui] (home) {Home / Overview Page};
+%         \node[block, below=of ui] (controlcenter) {Control Center};
+%         \node[block, below right=1.5cm and 6.5cm of ui] (incsettings) {Incubator Settings};
+%
+%         % Third Layer
+%         \node[block, below=1.0cm of home] (overview) {Overview of the Incubator};
+%         \node[block, below=of controlcenter] (widgets) {List of Widgets};
+%         \node[block, below=1.0cm of incsettings] (rawcontrols) {Raw Controls};
+%
+%         % Fourth Layer
+%         \node[block, below left=1.8cm and 0.5cm of widgets] (temphum) {Temperature and Humidity};
+%         \node[block, below right=1.8cm and 0.5cm of widgets] (lighting) {Lighting};
+%         \node[block, below=1.0cm of rawcontrols] (actuator) {Actuator Control};
+%
+%         % Fifth Layer
+%         \node[block, below left=3.8cm and -1.5cm of widgets] (peltier) {Peltier Control};
+%         \node[block, below right=3.8cm and -1.5cm of widgets] (humidifier) {Humidifier Control};
+%         \node[block, below left=1.4cm and -1.1cm of actuator] (panelmotors) {Panel Motors Control};
+%         \node[block, below right=1.4cm and -0.8cm of actuator] (hatchmotors) {Hatch Motors Control};
+%
+%         % Connections
+%         \draw[arrow] (app) -- (ui);
+%         \draw[arrow] (ui) -- (home);
+%         \draw[arrow] (ui) -- (controlcenter);
+%         \draw[arrow] (ui) -- (incsettings);
+%
+%         \draw[arrow] (home) -- (overview);
+%         \draw[arrow] (controlcenter) -- (widgets);
+%         \draw[arrow] (incsettings) -- (rawcontrols);
+%
+%         \draw[arrow] (widgets) -- (temphum);
+%         \draw[arrow] (widgets) -- (lighting);
+%         \draw[arrow] (rawcontrols) -- (actuator);
+%
+%         \draw[arrow] (widgets) -- (peltier);
+%         \draw[arrow] (widgets) -- (humidifier);
+%         \draw[arrow] (actuator) -- (panelmotors);
+%         \draw[arrow] (actuator) -- (hatchmotors);
+%
+%     \end{tikzpicture}
+%
+%
+%     % \resizebox{1.0\textwidth}{0.8\textheight}{
+%     % } % end resizebox
+%
+% \end{frame}
+%
+% \begin{frame} {Block Diagram: EMCU}
+%
+%     \begin{center}
+%
+%         \includegraphics[height = 0.9\textheight]{emcu_block_diagram.pdf}
+%
+%     \end{center}
+%
+% \end{frame}
+%
+% \begin{frame} {Block Diagram: GMU - TinyML}
+%
+%     \begin{center}
+%
+%         \includegraphics[width = \textwidth]{tinyml.png}
+%
+%     \end{center}
+%
+%
+% \end{frame}
+%
+% \begin{frame}{Block Diagram: GMU - Rail System Architecture}
+%
+%     % \begin{center}
+%     %
+%     % \end{center}
+%
+%     \begin{figure}
+%         \centering
+%         \includegraphics[
+%             height = 0.8\textheight,
+%             width=0.8\textwidth,
+%             keepaspectratio,
+%         ]{rail3.drawio.png}
+%         % \textbf{GMU Rail System Architecture}
+%     \end{figure}
+% \end{frame}
 
-    {
-        \begin{minipage} {0.415\textwidth}
-            \begin{center}
-                \includeObjImage{ext_right.png}{5}{4.5cm}{0.5cm}
-            \end{center}
-        \end{minipage}
-        \begin{minipage} {0.55\textwidth}
+\begin{frame} {Results: GMU - Controlling Circuits}
 
-            \begin{itemize}
-                \item \textbf{Seed Incubation Plant} aims to optimize the germination and
-                    growth process of seeds by providing a controlled and
-                    monitored environment.
+    \begin{center}
+        \includegraphics[height = 0.85\textheight]{gmu/Atmega_stepper_circuit.jpg}
 
-                \item \textbf{Environment Monitoring and Control Unit} (EMCU) part of the
-                    incubator takes care of environmental factors such as temperature,
-                    humidity, lighting, $\mbox{O}_2$, etc.
-
-                \item \textbf{Growth Monitoring Unit} (GMU) closely monitors and collects growth related
-                    information from each of the germinating saplings.
-
-                \item With the help of \textbf{SINC}, a companion app, the status of the incubator
-                    can be closely watched.
-            \end{itemize}
-
-        \end{minipage}
-    }
+        \vspace{-0.25cm}
+        \textbf{KiCAD Rendering of GMU Controlling Circuit}
+    \end{center}
 
 \end{frame}
 
-\begin{frame} {Objectives}
+\begin{frame} {Results: SINC - Connecting to ESPs and Live Feed}
 
     \begin{center}
-        \begin{tabularx} {\textwidth} {
-                *{3}{>{\centering \arraybackslash}X}
-            }
 
-            \includeObjImage{enclosure.png}{4}{2.825cm}{0.5cm}
+        \begin{tabular} {ccc}
+            \includegraphics[height = 0.85\textheight]{sinc/app_1.jpg}
             &
-            \includeObjImage{growth.png}{4}{2.625cm}{0.5cm}
+            \includegraphics[height = 0.85\textheight]{sinc/app_3.jpg}
             &
-            \includeObjImage{sinc.png}{4}{3.025cm}{0.5cm}
+            \includegraphics[height = 0.85\textheight]{sinc/app_2.jpg}
             \\
+        \end{tabular}
 
-            \begin{itemize}
-                \item Implement the sensor and actuator sides of the EMCU, thus
-                    driving it into a cohesive system.
-            \end{itemize}
-            &
-            \begin{itemize}
-                \item Implement an ESP32 CAM based Growth Monitoring Unit (GMU) powered by
-                    a TinyML model.
-            \end{itemize}
-            &
-            \begin{itemize}
-                \item Take the development of SINC, a companion app, to the alpha
-                    stage.
-            \end{itemize}
-            \\
 
-        \end{tabularx}
+        \vspace{-0.25cm}
+        \textbf{Live Feed from GMU within SINC App}
     \end{center}
 
 \end{frame}
 
-\begin{frame} {Block Diagram: Overall}
-
-    \begin{minipage} {0.29\textwidth}
-        \textbf{Major Components}
-        \vspace{0.25cm}
-        \renewcommand\arraystretch{1.5}
-        \begin{itemize}
-            \item EMCU
-            \item SINC
-            \item GMU
-        \end{itemize}
-    \end{minipage}
-    \begin{minipage} {0.7\textwidth}
-        \begin{center}
-            \includegraphics[width = \textwidth]{overall_block_diagram.pdf}
-        \end{center}
-    \end{minipage}
-
-
-\end{frame}
-
-\begin{frame}{Block Diagram: Sinc App}
-    \centering
-    \vspace{0.75cm}
-
-    \begin{tikzpicture}[
-            scale = 0.6,
-            transform shape,
-            node distance=1.4cm and 2cm
-        ]
-
-        % Top Layer
-        \node[block] (app) {SINC App};
-        \node[block, below=1.0cm of app] (ui) {User Interface};
-
-        % Second Layer
-        \node[block, below left=1.5cm and 2.0cm of ui] (home) {Home / Overview Page};
-        \node[block, below=of ui] (controlcenter) {Control Center};
-        \node[block, below right=1.5cm and 6.5cm of ui] (incsettings) {Incubator Settings};
-
-        % Third Layer
-        \node[block, below=1.0cm of home] (overview) {Overview of the Incubator};
-        \node[block, below=of controlcenter] (widgets) {List of Widgets};
-        \node[block, below=1.0cm of incsettings] (rawcontrols) {Raw Controls};
-
-        % Fourth Layer
-        \node[block, below left=1.8cm and 0.5cm of widgets] (temphum) {Temperature and Humidity};
-        \node[block, below right=1.8cm and 0.5cm of widgets] (lighting) {Lighting};
-        \node[block, below=1.0cm of rawcontrols] (actuator) {Actuator Control};
-
-        % Fifth Layer
-        \node[block, below left=3.8cm and -1.5cm of widgets] (peltier) {Peltier Control};
-        \node[block, below right=3.8cm and -1.5cm of widgets] (humidifier) {Humidifier Control};
-        \node[block, below left=1.4cm and -1.1cm of actuator] (panelmotors) {Panel Motors Control};
-        \node[block, below right=1.4cm and -0.8cm of actuator] (hatchmotors) {Hatch Motors Control};
-
-        % Connections
-        \draw[arrow] (app) -- (ui);
-        \draw[arrow] (ui) -- (home);
-        \draw[arrow] (ui) -- (controlcenter);
-        \draw[arrow] (ui) -- (incsettings);
-
-        \draw[arrow] (home) -- (overview);
-        \draw[arrow] (controlcenter) -- (widgets);
-        \draw[arrow] (incsettings) -- (rawcontrols);
-
-        \draw[arrow] (widgets) -- (temphum);
-        \draw[arrow] (widgets) -- (lighting);
-        \draw[arrow] (rawcontrols) -- (actuator);
-
-        \draw[arrow] (widgets) -- (peltier);
-        \draw[arrow] (widgets) -- (humidifier);
-        \draw[arrow] (actuator) -- (panelmotors);
-        \draw[arrow] (actuator) -- (hatchmotors);
-
-    \end{tikzpicture}
-
-
-    % \resizebox{1.0\textwidth}{0.8\textheight}{
-    % } % end resizebox
-
-\end{frame}
-
-\begin{frame} {Block Diagram: EMCU}
-
-    \begin{center}
-
-        \includegraphics[height = 0.9\textheight]{emcu_block_diagram.pdf}
-
-    \end{center}
-
-\end{frame}
-
-\begin{frame} {Block Diagram: GMU - TinyML}
-
-    \begin{center}
-
-        \includegraphics[width = \textwidth]{tinyml.png}
-
-    \end{center}
-
-
-\end{frame}
-
-\begin{frame}{Block Diagram: GMU - Rail System Architecture}
-
-    % \begin{center}
-    %
-    % \end{center}
-
-    \begin{figure}
-        \centering
-        \includegraphics[
-            height = 0.8\textheight,
-            width=0.8\textwidth,
-            keepaspectratio,
-        ]{rail3.drawio.png}
-        % \textbf{GMU Rail System Architecture}
-    \end{figure}
-\end{frame}
-
-% <start week num> <end week num> <start date> <end date> <content>
-\newcommand\workPlanStageShow[5] {
-    \begin{minipage}{0.207\textwidth}
-        \textbf{Week #1 - #2}
-        \vspace{0.25cm} \\
-        \texttt{START: \hfill #3 \\ END: \hfill #4}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.725\textwidth}
-        \vspace{0.75cm}
-        #5
-    \end{minipage}
-}
-
-\begin{frame}[allowframebreaks] {Work Plan}
-
-    \renewcommand\arraystretch{1.75}
-    \renewcommand\midrule{{\color{leafColorSecondary} \vspace{-8pt}\rule{\textwidth}{0.75pt}\vspace{8pt}}}
-
-    \begin{xltabular} {\textwidth} {
-            >{\raggedright \arraybackslash}X
-        }
-
-        % stage 06
-        \workPlanStageShow {11} {12}
-        {DEC 14 2025} {DEC 27 2025} {
-            \begin{itemize}
-                \item First thing.
-                \item Second thing.
-            \end{itemize}
-        }
-        \\ \midrule
-
-        % stage 07
-        \workPlanStageShow {13} {14}
-        {DEC 28 2025} {JAN 10 2026} {
-            % \begin{itemize}
-            %     \item First thing.
-            %     \item Second thing.
-            % \end{itemize}
-        }
-        \\ \midrule
-
-        % stage 08
-        \workPlanStageShow {15} {16}
-        {JAN 11 2026} {JAN 24 2026} {
-            % \begin{itemize}
-            %     \item First thing.
-            %     \item Second thing.
-            % \end{itemize}
-        }
-        \\ \midrule
-
-        % stage 09
-        \workPlanStageShow {17} {20}
-        {JAN 25 2026} {FEB 07 2026} {
-            % \begin{itemize}
-            %     \item First thing.
-            %     \item Second thing.
-            % \end{itemize}
-        }
-        \\ \midrule
-
-        % stage 10
-        \workPlanStageShow {21} {22}
-        {FEB 08 2026} {FEB 21 2026} {
-            % \begin{itemize}
-            %     \item First thing.
-            %     \item Second thing.
-            % \end{itemize}
-        }
-        \\ \midrule
-
-        % stage 11
-        \workPlanStageShow {23} {24}
-        {FEB 22 2026} {MAR 07 2026} {
-            % \begin{itemize}
-            %     \item First thing.
-            %     \item Second thing.
-            % \end{itemize}
-        }
-        \\ \midrule
-
-        % stage 12
-        \workPlanStageShow {25} {26}
-        {MAR 08 2026} {MAR 21 2026} {
-            % \begin{itemize}
-            %     \item First thing.
-            %     \item Second thing.
-            % \end{itemize}
-        }
-        \\ \midrule
-
-        % % stage 07
-        % Week 13 - 14
-        % &
-        % <++>
-        % \\ \midrule
-        %
-        % % stage 08
-        % Week 15 - 16
-        % &
-        % <++>
-        % \\ \midrule
-        %
-        % % stage 09
-        % Week 17 - 18
-        % &
-        % <++>
-        % \\ \midrule
-        %
-        % % stage 10
-        % Week 19 - 20
-        % &
-        % <++>
-        % \\ \midrule
-        %
-        % % stage 11
-        % Week 21 - 22
-        % &
-        % <++>
-        % \\ \midrule
-        %
-        % % stage 12
-        % Week 23 - 24
-        % &
-        % <++>
-
-        \\
-
-    \end{xltabular}
-
-\end{frame}
-
-\begin{frame}[allowframebreaks] {References}
-
-    \nocite{interEsp, ieeeComp, ieeeGreenAI, tinymlEnv, ieee01africa, microclimate, fruitfly, espGreen, ieee02, tinyml2}
-
-    \nopagebreak
-
-    \begingroup \let\clearpage\relax
-    \printbibliography[heading = none] %Prints bibliography
-    \endgroup
-
-\end{frame}
-
-\input{thank_you.tex}
+% % <start week num> <end week num> <start date> <end date> <content>
+% \newcommand\workPlanStageShow[5] {
+%     \begin{minipage}{0.207\textwidth}
+%         \textbf{Week #1 - #2}
+%         \vspace{0.25cm} \\
+%         \texttt{START: \hfill #3 \\ END: \hfill #4}
+%     \end{minipage}
+%     \hfill
+%     \begin{minipage}{0.725\textwidth}
+%         \vspace{0.75cm}
+%         #5
+%     \end{minipage}
+% }
+%
+% \begin{frame}[allowframebreaks] {Work Plan}
+%
+%     \renewcommand\arraystretch{1.75}
+%     \renewcommand\midrule{{\color{leafColorSecondary} \vspace{-8pt}\rule{\textwidth}{0.75pt}\vspace{8pt}}}
+%
+%     \begin{xltabular} {\textwidth} {
+%             >{\raggedright \arraybackslash}X
+%         }
+%
+%         % stage 06
+%         \workPlanStageShow {11} {12}
+%         {DEC 14 2025} {DEC 27 2025} {
+%             \begin{todolist}
+%                 \item First thing.
+%                 \item Second thing.
+%             \end{todolist}
+%         }
+%         \\ \midrule
+%
+%         % stage 07
+%         \workPlanStageShow {13} {14}
+%         {DEC 28 2025} {JAN 10 2026} {
+%             % \begin{itemize}
+%             %     \item First thing.
+%             %     \item Second thing.
+%             % \end{itemize}
+%         }
+%         \\ \midrule
+%
+%         % stage 08
+%         \workPlanStageShow {15} {16}
+%         {JAN 11 2026} {JAN 24 2026} {
+%             % \begin{itemize}
+%             %     \item First thing.
+%             %     \item Second thing.
+%             % \end{itemize}
+%         }
+%         \\ \midrule
+%
+%         % stage 09
+%         \workPlanStageShow {17} {20}
+%         {JAN 25 2026} {FEB 07 2026} {
+%             % \begin{itemize}
+%             %     \item First thing.
+%             %     \item Second thing.
+%             % \end{itemize}
+%         }
+%         \\ \midrule
+%
+%         % stage 10
+%         \workPlanStageShow {21} {22}
+%         {FEB 08 2026} {FEB 21 2026} {
+%             % \begin{itemize}
+%             %     \item First thing.
+%             %     \item Second thing.
+%             % \end{itemize}
+%         }
+%         \\ \midrule
+%
+%         % stage 11
+%         \workPlanStageShow {23} {24}
+%         {FEB 22 2026} {MAR 07 2026} {
+%             % \begin{itemize}
+%             %     \item First thing.
+%             %     \item Second thing.
+%             % \end{itemize}
+%         }
+%         \\ \midrule
+%
+%         % stage 12
+%         \workPlanStageShow {25} {26}
+%         {MAR 08 2026} {MAR 21 2026} {
+%             % \begin{itemize}
+%             %     \item First thing.
+%             %     \item Second thing.
+%             % \end{itemize}
+%         }
+%         \\ \midrule
+%
+%         % % stage 07
+%         % Week 13 - 14
+%         % &
+%         % <++>
+%         % \\ \midrule
+%         %
+%         % % stage 08
+%         % Week 15 - 16
+%         % &
+%         % <++>
+%         % \\ \midrule
+%         %
+%         % % stage 09
+%         % Week 17 - 18
+%         % &
+%         % <++>
+%         % \\ \midrule
+%         %
+%         % % stage 10
+%         % Week 19 - 20
+%         % &
+%         % <++>
+%         % \\ \midrule
+%         %
+%         % % stage 11
+%         % Week 21 - 22
+%         % &
+%         % <++>
+%         % \\ \midrule
+%         %
+%         % % stage 12
+%         % Week 23 - 24
+%         % &
+%         % <++>
+%
+%         \\
+%
+%     \end{xltabular}
+%
+% \end{frame}
+%
+% \begin{frame}[allowframebreaks] {References}
+%
+%     \nocite{interEsp, ieeeComp, ieeeGreenAI, tinymlEnv, ieee01africa, microclimate, fruitfly, espGreen, ieee02, tinyml2}
+%
+%     \nopagebreak
+%
+%     \begingroup \let\clearpage\relax
+%     \printbibliography[heading = none] %Prints bibliography
+%     \endgroup
+%
+% \end{frame}
+%
+% \input{thank_you.tex}
 
 \end{document}
